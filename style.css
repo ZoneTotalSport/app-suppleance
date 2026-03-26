@@ -36,7 +36,7 @@ h1,h2,h3 { font-family:'Bangers',cursive; letter-spacing:2px; text-transform:upp
 
 #gymBg {
   position:fixed; inset:0; z-index:0;
-  background:url('img/gym-bg-roots.jpg') center/cover no-repeat;
+  background:url('img/bg-suppleance.png') center/cover no-repeat;
   opacity:1;
   pointer-events:none;
 }
@@ -112,6 +112,56 @@ h1,h2,h3 { font-family:'Bangers',cursive; letter-spacing:2px; text-transform:upp
 }
 .hdr-btn:hover { background:rgba(255,255,255,0.2); transform:scale(1.1); }
 .hdr-btn-danger:hover { background:rgba(255,20,20,0.3); }
+
+/* ========== PROMO SECTION ========== */
+.promo-section {
+  max-width:1100px; margin:24px auto; padding:0 16px;
+}
+.promo-hero {
+  text-align:center;
+  background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(8px);
+  border-radius:var(--r-xl);
+  padding:32px 28px 24px;
+  margin-bottom:18px;
+}
+.promo-hero h2 {
+  font-size:2.4rem; color:var(--cyan);
+  text-shadow:2px 2px 0 rgba(0,0,0,0.3);
+}
+.promo-sub {
+  font-family:'Schoolbell',cursive; font-size:1.4rem;
+  color:var(--yellow); margin-top:8px; font-weight:bold;
+}
+.promo-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:14px; margin-bottom:16px;
+}
+.promo-card {
+  background:rgba(0,0,0,0.6);
+  backdrop-filter:blur(6px);
+  border-radius:var(--r-lg); padding:22px 20px;
+  border-left:4px solid var(--cyan);
+  transition:all 0.2s;
+}
+.promo-card:hover { transform:translateY(-3px); background:rgba(0,0,0,0.75); }
+.promo-icon { font-size:2rem; display:block; margin-bottom:8px; }
+.promo-card h3 {
+  font-size:1.3rem; color:var(--cyan); letter-spacing:2px; margin-bottom:6px;
+}
+.promo-card p {
+  font-family:'Schoolbell',cursive; font-size:1.1rem;
+  color:rgba(255,255,255,0.8); line-height:1.5;
+}
+.promo-bottom {
+  text-align:center;
+  font-family:'Schoolbell',cursive; font-size:1.2rem;
+  color:var(--white); font-weight:bold;
+  background:rgba(0,0,0,0.5);
+  backdrop-filter:blur(4px);
+  border-radius:var(--r-xl);
+  padding:14px 20px;
+}
 
 /* ========== CONFIG BAR ========== */
 .config-bar {
