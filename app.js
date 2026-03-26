@@ -13,12 +13,12 @@ var T = {
     period:"Période", day:"Jour",
     dayNames:["Lundi","Mardi","Mercredi","Jeudi","Vendredi"],
     notesPlaceholder:"Notes / consignes...",
-    timePlaceholder:"ex: 9h00-9h50",
-    survLabel:"SURVEILLANCE",
-    survPlaceholder:"Lieu / détails...",
-    survTimePh:"ex: 10h15",
+    timePlaceholder:"ex: 9h00",
+    survLabel:"SURVEILLANCE", survPlaceholder:"Lieu / détails...", survTimePh:"ex: 10h15",
     recess:"RÉCRÉATION", lunch:"DÎNER",
     recessPh:"Notes récré...", lunchPh:"Notes dîner...",
+    addBreak:"Ajouter", removeBreak:"Retirer", breakAfterLabel:"Après quelle période?",
+    breakRecessAM:"Récré AM", breakLunch:"Dîner", breakRecessPM:"Récré PM",
     duration:"Durée", material:"Matériel", intensity:"Intensité",
     confirmReset:"Effacer toute la planification?",
     selectPeriod:"Sélectionne d'abord une période dans l'agenda (clique sur la case)!",
@@ -33,12 +33,12 @@ var T = {
     period:"Period", day:"Day",
     dayNames:["Monday","Tuesday","Wednesday","Thursday","Friday"],
     notesPlaceholder:"Notes / instructions...",
-    timePlaceholder:"e.g. 9:00-9:50",
-    survLabel:"SUPERVISION",
-    survPlaceholder:"Location / details...",
-    survTimePh:"e.g. 10:15",
+    timePlaceholder:"e.g. 9:00",
+    survLabel:"SUPERVISION", survPlaceholder:"Location / details...", survTimePh:"e.g. 10:15",
     recess:"RECESS", lunch:"LUNCH",
     recessPh:"Recess notes...", lunchPh:"Lunch notes...",
+    addBreak:"Add", removeBreak:"Remove", breakAfterLabel:"After which period?",
+    breakRecessAM:"AM Recess", breakLunch:"Lunch", breakRecessPM:"PM Recess",
     duration:"Duration", material:"Material", intensity:"Intensity",
     confirmReset:"Clear all planning?",
     selectPeriod:"Select a period in the agenda first (click a cell)!",
@@ -53,12 +53,12 @@ var T = {
     period:"课时", day:"天",
     dayNames:["周一","周二","周三","周四","周五"],
     notesPlaceholder:"备注/说明...",
-    timePlaceholder:"如：9:00-9:50",
-    survLabel:"监督",
-    survPlaceholder:"地点/详情...",
-    survTimePh:"如：10:15",
+    timePlaceholder:"如：9:00",
+    survLabel:"监督", survPlaceholder:"地点/详情...", survTimePh:"如：10:15",
     recess:"课间休息", lunch:"午餐",
     recessPh:"课间备注...", lunchPh:"午餐备注...",
+    addBreak:"添加", removeBreak:"删除", breakAfterLabel:"在哪个课时之后?",
+    breakRecessAM:"上午课间", breakLunch:"午餐", breakRecessPM:"下午课间",
     duration:"时长", material:"器材", intensity:"强度",
     confirmReset:"清除所有计划？",
     selectPeriod:"请先点击一个课时格子！",
@@ -73,12 +73,12 @@ var T = {
     period:"Período", day:"Día",
     dayNames:["Lunes","Martes","Miércoles","Jueves","Viernes"],
     notesPlaceholder:"Notas / instrucciones...",
-    timePlaceholder:"ej: 9:00-9:50",
-    survLabel:"VIGILANCIA",
-    survPlaceholder:"Lugar / detalles...",
-    survTimePh:"ej: 10:15",
+    timePlaceholder:"ej: 9:00",
+    survLabel:"VIGILANCIA", survPlaceholder:"Lugar / detalles...", survTimePh:"ej: 10:15",
     recess:"RECREO", lunch:"ALMUERZO",
     recessPh:"Notas recreo...", lunchPh:"Notas almuerzo...",
+    addBreak:"Agregar", removeBreak:"Quitar", breakAfterLabel:"¿Después de qué período?",
+    breakRecessAM:"Recreo AM", breakLunch:"Almuerzo", breakRecessPM:"Recreo PM",
     duration:"Duración", material:"Material", intensity:"Intensidad",
     confirmReset:"¿Borrar toda la planificación?",
     selectPeriod:"¡Selecciona primero un período (clic en la celda)!",
@@ -103,17 +103,16 @@ function setLang(lang){
 }
 
 // --- STATE ---
-var selectedCell = null; // {day, period}
+var selectedCell = null;
 var agendaData = JSON.parse(localStorage.getItem('suppl_agenda') || '{}');
+// breaks: array of {after: periodNumber, type: 'recess'|'lunch'|'surv'}
+var breaksData = JSON.parse(localStorage.getItem('suppl_breaks') || '[]');
 var currentGameForInsert = null;
 
-function saveAgenda(){
-  localStorage.setItem('suppl_agenda', JSON.stringify(agendaData));
-}
+function saveAgenda(){ localStorage.setItem('suppl_agenda', JSON.stringify(agendaData)); }
+function saveBreaks(){ localStorage.setItem('suppl_breaks', JSON.stringify(breaksData)); }
 
 function getKey(d,p){ return d+'-'+p; }
-function getSurvKey(d,i){ return 'surv-'+d+'-'+i; }
-function getTimeKey(d,p){ return 'time-'+d+'-'+p; }
 
 // --- BUILD AGENDA ---
 function refreshAll(){
@@ -121,122 +120,136 @@ function refreshAll(){
   buildBank();
 }
 
+// Build the ordered list of slots for a day
+function buildSlotList(nPeriods){
+  var slots = [];
+  for(var p=1; p<=nPeriods; p++){
+    slots.push({type:'period', period:p});
+    // Check for breaks after this period
+    breaksData.forEach(function(b){
+      if(b.after === p) slots.push({type:b.type, after:p, id:b.id});
+    });
+  }
+  return slots;
+}
+
 function buildAgenda(){
-  var nDays = parseInt(document.getElementById('sel-days').value);
-  var nPeriods = parseInt(document.getElementById('sel-periods').value);
+  var nDays = parseInt(document.getElementById('sel-days').value) || 1;
+  var nPeriods = parseInt(document.getElementById('sel-periods').value) || 1;
+  if(nDays<1) nDays=1; if(nDays>10) nDays=10;
+  if(nPeriods<1) nPeriods=1; if(nPeriods>10) nPeriods=10;
   var container = document.getElementById('agenda-container');
   var dayNames = t('dayNames');
   var dayColors = ['day-color-0','day-color-1','day-color-2','day-color-3','day-color-4'];
 
-  var html = '<div class="agenda-days-wrap">';
+  var slots = buildSlotList(nPeriods);
 
+  // Build break tags for config bar
+  buildBreakTags();
+
+  var html = '<div class="agenda-wrap">';
+
+  // === TIME COLUMN (left) ===
+  html += '<div class="time-column">';
+  html += '<div class="time-col-header">⏰</div>';
+  slots.forEach(function(slot){
+    if(slot.type === 'period'){
+      var timeKey = 'time-'+slot.period;
+      var timeVal = agendaData[timeKey] || '';
+      html += '<div class="time-slot time-slot-period">';
+      html += '<input type="text" class="time-input" placeholder="'+t('timePlaceholder')+'" value="'+escAttr(timeVal)+'" onchange="saveTimeSlot('+slot.period+',this.value)" />';
+      html += '</div>';
+    } else {
+      var bTimeKey = 'btime-'+slot.id;
+      var bTimeVal = agendaData[bTimeKey] || '';
+      html += '<div class="time-slot time-slot-break">';
+      html += '<input type="text" class="time-input time-input-break" placeholder="'+t('survTimePh')+'" value="'+escAttr(bTimeVal)+'" onchange="saveBreakTime(\''+slot.id+'\',this.value)" />';
+      html += '</div>';
+    }
+  });
+  html += '</div>';
+
+  // === DAY COLUMNS ===
   for(var d=0; d<nDays; d++){
     html += '<div class="agenda-day-col">';
-
-    // Day header
     html += '<div class="agenda-day-header '+dayColors[d%5]+'">';
     html += '<h3>'+dayNames[d%5]+'</h3>';
     html += '<span>'+t('day')+' '+(d+1)+'</span>';
     html += '</div>';
-
-    // Day body
     html += '<div class="agenda-day-body">';
 
-    // Determine break positions: recess after P2, lunch halfway, recess after P(mid+1)
-    var midPoint = Math.ceil(nPeriods / 2);
+    slots.forEach(function(slot){
+      if(slot.type === 'period'){
+        var p = slot.period;
+        var key = getKey(d,p);
+        var data = agendaData[key] || {};
+        var isSelected = selectedCell && selectedCell.day===d && selectedCell.period===p;
 
-    for(var p=1; p<=nPeriods; p++){
-      var key = getKey(d,p);
-      var timeKey = getTimeKey(d,p);
-      var data = agendaData[key] || {};
-      var timeVal = agendaData[timeKey] || '';
-      var isSelected = selectedCell && selectedCell.day===d && selectedCell.period===p;
-
-      html += '<div class="period-card'+(isSelected?' selected':'')+'" id="pc-'+d+'-'+p+'">';
-
-      // Header with period badge + time input
-      html += '<div class="period-card-header">';
-      html += '<span class="period-badge">P'+p+'</span>';
-      html += '<input type="text" class="period-time-input" placeholder="'+t('timePlaceholder')+'" value="'+escAttr(timeVal)+'" onchange="saveTime('+d+','+p+',this.value)" />';
-      html += '</div>';
-
-      // Body (clickable for selection + game display)
-      html += '<div class="period-card-body" onclick="selectCell('+d+','+p+')" style="position:relative">';
-
-      if(data.game){
-        html += '<div class="cell-cat">'+escHtml(data.cat||'')+'</div>';
-        html += '<div class="cell-game">'+escHtml(data.game)+'</div>';
-        html += '<div class="cell-desc">'+escHtml(data.desc||'')+'</div>';
-        html += '<button class="cell-clear visible" onclick="event.stopPropagation();clearCell('+d+','+p+')">&times;</button>';
-      }
-
-      html += '<textarea class="cell-notes" placeholder="'+t('notesPlaceholder')+'" oninput="saveNotes('+d+','+p+',this.value)" onclick="event.stopPropagation()">'+(data.notes||'')+'</textarea>';
-      html += '</div>'; // period-card-body
-      html += '</div>'; // period-card
-
-      // Insert breaks between periods
-      if(p < nPeriods){
-        if(p === midPoint){
-          // LUNCH break
-          var lunchKey = 'lunch-'+d;
-          var lunchData = agendaData[lunchKey] || {};
-          html += '<div class="break-card break-lunch">';
-          html += '<div class="break-icon">🍎</div>';
-          html += '<div class="break-content">';
-          html += '<span class="break-label">'+t('lunch')+'</span>';
-          html += '<input type="text" class="break-time" placeholder="'+t('survTimePh')+'" value="'+escAttr(lunchData.time||'')+'" onchange="saveBreak(\'lunch-'+d+'\',\'time\',this.value)" />';
-          html += '</div>';
-          html += '<input type="text" class="break-notes" placeholder="'+t('lunchPh')+'" value="'+escAttr(lunchData.text||'')+'" onchange="saveBreak(\'lunch-'+d+'\',\'text\',this.value)" />';
-          html += '</div>';
-
-          // Surveillance at lunch
-          var survKey = getSurvKey(d,p);
-          var survData = agendaData[survKey] || {};
-          html += '<div class="surv-card">';
-          html += '<span class="surv-badge">👁 '+t('survLabel')+'</span>';
-          html += '<input type="text" class="surv-time" placeholder="'+t('survTimePh')+'" value="'+escAttr(survData.time||'')+'" onchange="saveSurv('+d+','+p+',\'time\',this.value)" />';
-          html += '<input type="text" class="surv-input" placeholder="'+t('survPlaceholder')+'" value="'+escAttr(survData.text||'')+'" onchange="saveSurv('+d+','+p+',\'text\',this.value)" />';
-          html += '</div>';
-        } else {
-          // RECESS break
-          var recKey = 'rec-'+d+'-'+p;
-          var recData = agendaData[recKey] || {};
-          html += '<div class="break-card break-recess">';
-          html += '<div class="break-icon">⚽</div>';
-          html += '<div class="break-content">';
-          html += '<span class="break-label">'+t('recess')+'</span>';
-          html += '<input type="text" class="break-time" placeholder="'+t('survTimePh')+'" value="'+escAttr(recData.time||'')+'" onchange="saveBreak(\'rec-'+d+'-'+p+'\',\'time\',this.value)" />';
-          html += '</div>';
-          html += '<input type="text" class="break-notes" placeholder="'+t('recessPh')+'" value="'+escAttr(recData.text||'')+'" onchange="saveBreak(\'rec-'+d+'-'+p+'\',\'text\',this.value)" />';
-          html += '</div>';
-
-          // Surveillance at recess
-          var survKey = getSurvKey(d,p);
-          var survData = agendaData[survKey] || {};
-          html += '<div class="surv-card">';
-          html += '<span class="surv-badge">👁 '+t('survLabel')+'</span>';
-          html += '<input type="text" class="surv-time" placeholder="'+t('survTimePh')+'" value="'+escAttr(survData.time||'')+'" onchange="saveSurv('+d+','+p+',\'time\',this.value)" />';
-          html += '<input type="text" class="surv-input" placeholder="'+t('survPlaceholder')+'" value="'+escAttr(survData.text||'')+'" onchange="saveSurv('+d+','+p+',\'text\',this.value)" />';
-          html += '</div>';
+        html += '<div class="period-card'+(isSelected?' selected':'')+'" id="pc-'+d+'-'+p+'">';
+        html += '<div class="period-card-header">';
+        html += '<span class="period-badge">P'+p+'</span>';
+        html += '</div>';
+        html += '<div class="period-card-body" onclick="selectCell('+d+','+p+')" style="position:relative">';
+        if(data.game){
+          html += '<div class="cell-cat">'+escHtml(data.cat||'')+'</div>';
+          html += '<div class="cell-game">'+escHtml(data.game)+'</div>';
+          html += '<div class="cell-desc">'+escHtml(data.desc||'')+'</div>';
+          html += '<button class="cell-clear visible" onclick="event.stopPropagation();clearCell('+d+','+p+')">&times;</button>';
         }
+        html += '<textarea class="cell-notes" placeholder="'+t('notesPlaceholder')+'" oninput="saveNotes('+d+','+p+',this.value)" onclick="event.stopPropagation()">'+(data.notes||'')+'</textarea>';
+        html += '</div></div>';
+
+      } else {
+        // Break card (recess / lunch)
+        var bKey = 'brk-'+d+'-'+slot.id;
+        var bData = agendaData[bKey] || {};
+        var icon = slot.type==='lunch'?'🍎':'⚽';
+        var label = slot.type==='lunch'?t('lunch'):t('recess');
+        var cssClass = slot.type==='lunch'?'break-lunch':'break-recess';
+        var ph = slot.type==='lunch'?t('lunchPh'):t('recessPh');
+
+        html += '<div class="break-card '+cssClass+'">';
+        html += '<div class="break-top">';
+        html += '<span class="break-icon">'+icon+'</span>';
+        html += '<span class="break-label">'+label+'</span>';
+        html += '</div>';
+        html += '<input type="text" class="break-notes" placeholder="'+ph+'" value="'+escAttr(bData.text||'')+'" onchange="saveBreakData(\''+bKey+'\',this.value)" />';
+        html += '</div>';
       }
-    }
+    });
 
-    // End of day surveillance
-    var survKeyEnd = getSurvKey(d,nPeriods);
-    var survDataEnd = agendaData[survKeyEnd] || {};
-    html += '<div class="surv-card">';
-    html += '<span class="surv-badge">👁 '+t('survLabel')+'</span>';
-    html += '<input type="text" class="surv-time" placeholder="'+t('survTimePh')+'" value="'+escAttr(survDataEnd.time||'')+'" onchange="saveSurv('+d+','+nPeriods+',\'time\',this.value)" />';
-    html += '<input type="text" class="surv-input" placeholder="'+t('survPlaceholder')+'" value="'+escAttr(survDataEnd.text||'')+'" onchange="saveSurv('+d+','+nPeriods+',\'text\',this.value)" />';
-    html += '</div>';
-
-    html += '</div>'; // agenda-day-body
-    html += '</div>'; // agenda-day-col
+    html += '</div></div>';
   }
 
-  html += '</div>'; // agenda-days-wrap
+  html += '</div>';
   container.innerHTML = html;
+}
+
+function buildBreakTags(){
+  var target = document.getElementById('break-tags-zone');
+  if(!target) return;
+  var html = '';
+  breaksData.forEach(function(b){
+    var lbl = b.type==='lunch'?'🍎 '+t('breakLunch'):'⚽ '+(b.subtype==='pm'?t('breakRecessPM'):t('breakRecessAM'));
+    html += '<span class="break-tag">'+lbl+' (P'+b.after+') <button onclick="removeBreak(\''+b.id+'\')">&times;</button></span>';
+  });
+  target.innerHTML = html;
+}
+
+function saveTimeSlot(p,val){
+  agendaData['time-'+p] = val;
+  saveAgenda();
+}
+
+function saveBreakTime(id,val){
+  agendaData['btime-'+id] = val;
+  saveAgenda();
+}
+
+function saveBreakData(key,val){
+  if(!agendaData[key]) agendaData[key] = {};
+  agendaData[key] = {text:val};
+  saveAgenda();
 }
 
 function selectCell(d,p){
@@ -250,9 +263,7 @@ function clearCell(d,p){
   var key = getKey(d,p);
   if(agendaData[key]){
     var notes = agendaData[key].notes || '';
-    agendaData[key] = notes ? {notes:notes} : undefined;
-    if(!notes) delete agendaData[key];
-    else agendaData[key] = {notes:notes};
+    if(!notes) delete agendaData[key]; else agendaData[key] = {notes:notes};
     saveAgenda();
     buildAgenda();
   }
@@ -265,23 +276,42 @@ function saveNotes(d,p,val){
   saveAgenda();
 }
 
-function saveTime(d,p,val){
-  var key = getTimeKey(d,p);
-  agendaData[key] = val;
-  saveAgenda();
+// --- BREAKS MANAGEMENT ---
+function openBreakMenu(){
+  var nPeriods = parseInt(document.getElementById('sel-periods').value) || 4;
+  var opts = '';
+  for(var i=1; i<nPeriods; i++) opts += '<option value="'+i+'">P'+i+'</option>';
+
+  var html = '<div class="break-menu-content">';
+  html += '<label>'+t('breakAfterLabel')+'</label>';
+  html += '<select id="break-after">'+opts+'</select>';
+  html += '<div class="break-type-buttons">';
+  html += '<button class="break-type-btn break-type-recess" onclick="confirmAddBreak(\'recess\',\'am\')">⚽ '+t('breakRecessAM')+'</button>';
+  html += '<button class="break-type-btn break-type-lunch" onclick="confirmAddBreak(\'lunch\',\'\')">🍎 '+t('breakLunch')+'</button>';
+  html += '<button class="break-type-btn break-type-recess" onclick="confirmAddBreak(\'recess\',\'pm\')">⚽ '+t('breakRecessPM')+'</button>';
+  html += '</div>';
+  html += '</div>';
+
+  document.getElementById('modal-game-title').textContent = t('addBreak');
+  document.getElementById('modal-game-meta').innerHTML = '';
+  document.getElementById('modal-game-desc').innerHTML = html;
+  document.getElementById('btn-insert').style.display = 'none';
+  document.getElementById('gameModal').classList.add('open');
 }
 
-function saveSurv(d,p,field,val){
-  var key = getSurvKey(d,p);
-  if(!agendaData[key]) agendaData[key] = {};
-  agendaData[key][field] = val;
-  saveAgenda();
+function confirmAddBreak(type, subtype){
+  var after = parseInt(document.getElementById('break-after').value);
+  var id = type+'-'+subtype+'-'+after+'-'+Date.now();
+  breaksData.push({after:after, type:type, subtype:subtype, id:id});
+  saveBreaks();
+  closeModal();
+  buildAgenda();
 }
 
-function saveBreak(key,field,val){
-  if(!agendaData[key]) agendaData[key] = {};
-  agendaData[key][field] = val;
-  saveAgenda();
+function removeBreak(id){
+  breaksData = breaksData.filter(function(b){ return b.id !== id; });
+  saveBreaks();
+  buildAgenda();
 }
 
 // --- GAME BANK ---
@@ -324,30 +354,21 @@ function buildBank(){
   document.getElementById('bank-grid').innerHTML = html;
 }
 
-function filterBank(cat){
-  currentFilter = cat;
-  buildBank();
-}
+function filterBank(cat){ currentFilter = cat; buildBank(); }
 
 // --- GAME MODAL ---
 function showGame(idx){
   var games = currentFilter==='all' ? getGamesForLevel() : getGamesForLevel().filter(function(g){ return g.cat===currentFilter; });
-  var g = games[idx];
-  if(!g) return;
+  var g = games[idx]; if(!g) return;
   currentGameForInsert = g;
 
   document.getElementById('modal-game-title').textContent = g.titre;
   document.getElementById('modal-game-meta').innerHTML =
-    '<span>📂 '+escHtml(g.cat)+'</span>'+
-    '<span>⏱ '+escHtml(g.duree)+'</span>'+
-    '<span>🔥 '+escHtml(g.intensite)+'</span>'+
+    '<span>📂 '+escHtml(g.cat)+'</span><span>⏱ '+escHtml(g.duree)+'</span><span>🔥 '+escHtml(g.intensite)+'</span>'+
     (g.materiel!=='Aucun'?'<span>🎒 '+escHtml(g.materiel)+'</span>':'');
   document.getElementById('modal-game-desc').innerHTML = '<p>'+escHtml(g.desc)+'</p>';
-
   var btn = document.getElementById('btn-insert');
-  btn.style.display = 'block';
-  btn.textContent = t('insertBtn');
-
+  btn.style.display = 'block'; btn.textContent = t('insertBtn');
   document.getElementById('gameModal').classList.add('open');
 }
 
@@ -357,32 +378,20 @@ function closeModal(){
 }
 
 function insertGameToPeriod(){
-  if(!selectedCell){
-    alert(t('selectPeriod'));
-    return;
-  }
+  if(!selectedCell){ alert(t('selectPeriod')); return; }
   if(!currentGameForInsert) return;
-
   var key = getKey(selectedCell.day, selectedCell.period);
   var existing = agendaData[key] || {};
-  agendaData[key] = {
-    game: currentGameForInsert.titre,
-    cat: currentGameForInsert.cat,
-    desc: currentGameForInsert.desc,
-    notes: existing.notes || ''
-  };
-  saveAgenda();
-  closeModal();
-  buildAgenda();
+  agendaData[key] = { game:currentGameForInsert.titre, cat:currentGameForInsert.cat, desc:currentGameForInsert.desc, notes:existing.notes||'' };
+  saveAgenda(); closeModal(); buildAgenda();
 }
 
 // --- RESET ---
 function resetAll(){
   if(confirm(t('confirmReset'))){
-    agendaData = {};
-    localStorage.removeItem('suppl_agenda');
-    selectedCell = null;
-    buildAgenda();
+    agendaData = {}; breaksData = [];
+    localStorage.removeItem('suppl_agenda'); localStorage.removeItem('suppl_breaks');
+    selectedCell = null; buildAgenda();
   }
 }
 

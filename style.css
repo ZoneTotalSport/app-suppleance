@@ -138,15 +138,47 @@ h1,h2,h3 { font-family:'Bangers',cursive; letter-spacing:2px; text-transform:upp
 
 /* ========== AGENDA — SEPARATED DAYS ========== */
 .agenda-container {
-  max-width:1400px; margin:0 auto 30px; padding:0 16px;
+  max-width:1500px; margin:0 auto 30px; padding:0 16px;
 }
 
-.agenda-days-wrap {
-  display:flex; gap:20px; overflow-x:auto; padding-bottom:10px;
+.agenda-wrap {
+  display:flex; gap:12px; overflow-x:auto; padding-bottom:10px;
 }
 
+/* Time column (left) */
+.time-column {
+  min-width:90px; max-width:90px;
+  display:flex; flex-direction:column;
+  gap:10px;
+  padding-top:10px;
+}
+.time-col-header {
+  padding:14px 8px; text-align:center;
+  font-size:1.4rem;
+  background:var(--navy); color:var(--white);
+  border-radius:var(--r-lg);
+  margin-top:-10px;
+}
+.time-slot {
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(255,255,255,0.85);
+  border-radius:var(--r-md);
+  box-shadow:0 2px 6px rgba(0,0,0,0.08);
+}
+.time-slot-period { min-height:140px; }
+.time-slot-break { min-height:50px; background:rgba(255,255,255,0.6); }
+.time-input {
+  font-family:'Schoolbell',cursive; font-size:1.1rem;
+  background:transparent; border:none;
+  color:var(--navy); width:80px; padding:4px;
+  outline:none; text-align:center; font-weight:bold;
+}
+.time-input::placeholder { color:rgba(0,0,0,0.3); font-weight:normal; }
+.time-input-break { color:var(--orange); font-size:1rem; }
+
+/* Day columns */
 .agenda-day-col {
-  flex:1; min-width:280px;
+  flex:1; min-width:240px;
 }
 
 .agenda-day-header {
@@ -163,30 +195,32 @@ h1,h2,h3 { font-family:'Bangers',cursive; letter-spacing:2px; text-transform:upp
 }
 
 .agenda-day-body {
-  background:rgba(255,255,255,1);
+  background:transparent;
   border-radius:0 0 var(--r-lg) var(--r-lg);
-  padding:14px;
-  display:flex; flex-direction:column; gap:18px;
-  box-shadow:0 8px 30px rgba(0,0,0,0.1);
+  display:flex; flex-direction:column;
+  gap:10px;
+  padding:10px 0;
 }
 
 /* Period card inside a day */
 .period-card {
-  background:rgba(245,240,232,0.6);
-  border-radius:var(--r-md);
+  background:rgba(255,255,255,1);
   overflow:hidden;
   transition:all 0.2s;
-  border:2px solid rgba(0,0,0,0.08);
+  border-radius:var(--r-md);
+  box-shadow:0 2px 8px rgba(0,0,0,0.1);
+  min-height:140px;
 }
 .period-card.selected {
-  border-color:var(--cyan);
-  box-shadow:0 0 15px rgba(0,229,255,0.25);
+  background:rgba(0,229,255,0.08);
+  box-shadow:inset 4px 0 0 var(--cyan);
 }
 
 .period-card-header {
   display:flex; align-items:center; gap:8px;
-  padding:10px 14px;
-  background:rgba(0,0,0,0.04);
+  padding:8px 14px;
+  background:rgba(0,0,0,0.03);
+  border-bottom:1px solid rgba(0,0,0,0.06);
 }
 .period-badge {
   font-family:'Bangers',cursive; font-size:1.4rem;
@@ -241,40 +275,32 @@ h1,h2,h3 { font-family:'Bangers',cursive; letter-spacing:2px; text-transform:upp
 .period-card:hover .cell-clear.visible { display:block; }
 .period-card .cell-clear:hover { background:rgba(255,0,0,0.25); }
 
-/* Break cards (recess / lunch) */
+/* Break cards (recess / lunch / surv) */
 .break-card {
-  display:flex; align-items:center; gap:10px;
-  padding:12px 14px;
+  padding:10px 14px;
+  min-height:50px;
+  display:flex; flex-direction:column; gap:4px;
+  justify-content:center;
   border-radius:var(--r-md);
-  flex-wrap:wrap;
+  box-shadow:0 2px 6px rgba(0,0,0,0.08);
 }
-.break-recess {
-  background:rgba(76,175,80,0.12);
-  border:2px solid rgba(76,175,80,0.3);
-}
-.break-lunch {
-  background:rgba(255,152,0,0.12);
-  border:2px solid rgba(255,152,0,0.3);
-}
-.break-icon { font-size:1.6rem; }
-.break-content { display:flex; align-items:center; gap:8px; }
+.break-recess { background:rgba(76,175,80,0.15); }
+.break-lunch { background:rgba(255,152,0,0.15); }
+.break-surv { background:rgba(0,229,255,0.1); }
+.break-top { display:flex; align-items:center; gap:6px; }
+.break-icon { font-size:1.2rem; }
 .break-label {
-  font-family:'Bangers',cursive; font-size:1.2rem;
+  font-family:'Bangers',cursive; font-size:1.1rem;
   letter-spacing:2px; white-space:nowrap;
 }
 .break-recess .break-label { color:var(--green); }
 .break-lunch .break-label { color:var(--orange); }
-.break-time {
-  font-family:'Schoolbell',cursive; font-size:1.1rem;
-  background:transparent; border:none; border-bottom:1px dashed rgba(0,0,0,0.2);
-  color:var(--text); width:100px; padding:4px; outline:none; text-align:center;
-}
-.break-time::placeholder { color:rgba(0,0,0,0.3); }
+.break-surv .break-label { color:var(--cyan); }
 .break-notes {
-  flex:1; min-width:120px;
-  font-family:'Schoolbell',cursive; font-size:1.1rem;
+  width:100%;
+  font-family:'Schoolbell',cursive; font-size:1rem;
   background:transparent; border:none; border-bottom:1px dashed rgba(0,0,0,0.15);
-  color:var(--text); padding:4px; outline:none;
+  color:var(--text); padding:2px 0; outline:none;
 }
 .break-notes::placeholder { color:rgba(0,0,0,0.3); }
 
@@ -303,6 +329,73 @@ h1,h2,h3 { font-family:'Bangers',cursive; letter-spacing:2px; text-transform:upp
   color:var(--orange); width:100px; padding:4px; outline:none; text-align:center;
 }
 .surv-time::placeholder { color:rgba(255,152,0,0.5); }
+
+/* Add break button in config bar */
+.add-break-btn {
+  font-family:'Bangers',cursive; font-size:1.3rem; letter-spacing:2px;
+  padding:10px 24px; border-radius:50px; border:2px solid var(--cyan);
+  background:rgba(0,229,255,0.15); color:var(--cyan);
+  cursor:pointer; transition:all 0.2s; white-space:nowrap;
+}
+.add-break-btn:hover { background:var(--cyan); color:var(--navy); }
+.config-hint {
+  font-family:'Fredoka',sans-serif; font-size:0.75rem; font-weight:600;
+  color:rgba(255,255,255,0.5); margin-top:2px;
+}
+
+/* Break tags bar (below config) */
+.break-tags-bar {
+  display:flex; gap:8px; flex-wrap:wrap; justify-content:center;
+  max-width:900px; margin:0 auto; padding:0 20px;
+}
+.break-tags-bar:empty { display:none; }
+.break-tag {
+  font-family:'Fredoka',sans-serif; font-size:0.85rem; font-weight:600;
+  padding:6px 14px; border-radius:50px;
+  background:rgba(0,0,0,0.55); color:rgba(255,255,255,0.85);
+  display:flex; align-items:center; gap:6px;
+  backdrop-filter:blur(4px);
+}
+.break-tag button {
+  background:rgba(255,0,0,0.3); border:none; color:#fff;
+  border-radius:50%; width:22px; height:22px;
+  font-size:1rem; cursor:pointer; line-height:22px; text-align:center;
+  transition:background 0.2s;
+}
+.break-tag button:hover { background:rgba(255,0,0,0.6); }
+
+/* Break menu inside modal */
+.break-menu-content {
+  display:flex; flex-direction:column; gap:14px;
+}
+.break-menu-content label {
+  font-family:'Bangers',cursive; font-size:1.2rem; color:var(--cyan); letter-spacing:1px;
+}
+.break-menu-content select {
+  font-family:'Schoolbell',cursive; font-size:1.2rem;
+  padding:10px 16px; border-radius:var(--r-sm);
+  border:2px solid rgba(0,229,255,0.3);
+  background:rgba(255,255,255,0.08); color:var(--white);
+  cursor:pointer;
+}
+.break-menu-content select option { background:var(--navy); color:var(--white); }
+.break-type-buttons {
+  display:flex; gap:10px; flex-wrap:wrap; margin-top:6px;
+}
+.break-type-btn {
+  flex:1; min-width:120px;
+  font-family:'Bangers',cursive; font-size:1.2rem; letter-spacing:2px;
+  padding:14px 10px; border-radius:var(--r-md); border:2px solid rgba(255,255,255,0.15);
+  cursor:pointer; transition:all 0.2s; text-align:center;
+}
+.break-type-recess {
+  background:rgba(76,175,80,0.2); color:var(--green); border-color:rgba(76,175,80,0.4);
+}
+.break-type-recess:hover { background:rgba(76,175,80,0.4); color:#fff; }
+.break-type-lunch {
+  background:rgba(255,152,0,0.2); color:var(--orange); border-color:rgba(255,152,0,0.4);
+}
+.break-type-lunch:hover { background:rgba(255,152,0,0.4); color:#fff; }
 
 /* Day colors */
 .day-color-0 { background:linear-gradient(135deg,var(--cyan),#00B8D4); }
