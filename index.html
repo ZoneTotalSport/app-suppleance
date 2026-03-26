@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Schoolbell&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=1" />
+  <link rel="stylesheet" href="style.css?v=2" />
 </head>
 <body>
 
@@ -61,22 +61,11 @@
       </div>
       <div class="config-item">
         <label data-i18n="lblDays">Nombre de jours</label>
-        <select id="sel-days" onchange="refreshAll()">
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3" selected>3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-        </select>
+        <input type="number" id="sel-days" min="1" max="10" value="3" onchange="refreshAll()" oninput="refreshAll()" />
       </div>
       <div class="config-item">
         <label data-i18n="lblPeriods">Périodes / jour</label>
-        <select id="sel-periods" onchange="refreshAll()">
-          <option value="3">3</option>
-          <option value="4" selected>4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-        </select>
+        <input type="number" id="sel-periods" min="1" max="10" value="4" onchange="refreshAll()" oninput="refreshAll()" />
       </div>
     </div>
 
@@ -124,7 +113,7 @@
     </div>
   </div>
 
-  <script src="jeux-suppleance.js?v=1"></script>
-  <script src="app.js?v=1"></script>
+  <script src="jeux-suppleance.js?v=2"></script>
+  <script src="app.js?v=2"></script>
 </body>
 </html>

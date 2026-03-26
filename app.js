@@ -13,12 +13,14 @@ var T = {
     period:"Période", day:"Jour",
     dayNames:["Lundi","Mardi","Mercredi","Jeudi","Vendredi"],
     notesPlaceholder:"Notes / consignes...",
+    timePlaceholder:"ex: 9h00-9h50",
+    survLabel:"SURVEILLANCE",
+    survPlaceholder:"Lieu / détails...",
+    survTimePh:"ex: 10h15",
     duration:"Durée", material:"Matériel", intensity:"Intensité",
     confirmReset:"Effacer toute la planification?",
-    selectPeriod:"Sélectionne d'abord une période dans l'agenda!",
-    inserted:"Jeu inséré!",
-    catPoursuite:"Poursuite",catCoop:"Coopération",catManip:"Manipulation",
-    catBallon:"Ballon chasseur",catSport:"Sport collectif",catOppo:"Opposition"
+    selectPeriod:"Sélectionne d'abord une période dans l'agenda (clique sur la case)!",
+    inserted:"Jeu inséré!"
   },
   en: {
     appTitle:"MY SUBSTITUTE PLAN", lblLevel:"School level", lblDays:"Number of days",
@@ -29,12 +31,14 @@ var T = {
     period:"Period", day:"Day",
     dayNames:["Monday","Tuesday","Wednesday","Thursday","Friday"],
     notesPlaceholder:"Notes / instructions...",
+    timePlaceholder:"e.g. 9:00-9:50",
+    survLabel:"SUPERVISION",
+    survPlaceholder:"Location / details...",
+    survTimePh:"e.g. 10:15",
     duration:"Duration", material:"Material", intensity:"Intensity",
     confirmReset:"Clear all planning?",
-    selectPeriod:"Select a period in the agenda first!",
-    inserted:"Game inserted!",
-    catPoursuite:"Chase",catCoop:"Cooperation",catManip:"Manipulation",
-    catBallon:"Dodgeball",catSport:"Team sport",catOppo:"Opposition"
+    selectPeriod:"Select a period in the agenda first (click a cell)!",
+    inserted:"Game inserted!"
   },
   zh: {
     appTitle:"我的代课计划", lblLevel:"学段", lblDays:"天数",
@@ -45,12 +49,14 @@ var T = {
     period:"课时", day:"天",
     dayNames:["周一","周二","周三","周四","周五"],
     notesPlaceholder:"备注/说明...",
+    timePlaceholder:"如：9:00-9:50",
+    survLabel:"监督",
+    survPlaceholder:"地点/详情...",
+    survTimePh:"如：10:15",
     duration:"时长", material:"器材", intensity:"强度",
     confirmReset:"清除所有计划？",
-    selectPeriod:"请先选择一个课时！",
-    inserted:"已插入游戏！",
-    catPoursuite:"追逐",catCoop:"合作",catManip:"操作",
-    catBallon:"躲避球",catSport:"团队运动",catOppo:"对抗"
+    selectPeriod:"请先点击一个课时格子！",
+    inserted:"已插入游戏！"
   },
   es: {
     appTitle:"MI SUPLENCIA", lblLevel:"Nivel escolar", lblDays:"Número de días",
@@ -61,12 +67,14 @@ var T = {
     period:"Período", day:"Día",
     dayNames:["Lunes","Martes","Miércoles","Jueves","Viernes"],
     notesPlaceholder:"Notas / instrucciones...",
+    timePlaceholder:"ej: 9:00-9:50",
+    survLabel:"VIGILANCIA",
+    survPlaceholder:"Lugar / detalles...",
+    survTimePh:"ej: 10:15",
     duration:"Duración", material:"Material", intensity:"Intensidad",
     confirmReset:"¿Borrar toda la planificación?",
-    selectPeriod:"¡Selecciona primero un período en la agenda!",
-    inserted:"¡Juego insertado!",
-    catPoursuite:"Persecución",catCoop:"Cooperación",catManip:"Manipulación",
-    catBallon:"Quemados",catSport:"Deporte colectivo",catOppo:"Oposición"
+    selectPeriod:"¡Selecciona primero un período (clic en la celda)!",
+    inserted:"¡Juego insertado!"
   }
 };
 
@@ -96,8 +104,10 @@ function saveAgenda(){
 }
 
 function getKey(d,p){ return d+'-'+p; }
+function getSurvKey(d,i){ return 'surv-'+d+'-'+i; }
+function getTimeKey(d,p){ return 'time-'+d+'-'+p; }
 
-// --- BUILD AGENDA TABLE ---
+// --- BUILD AGENDA ---
 function refreshAll(){
   buildAgenda();
   buildBank();
@@ -110,24 +120,37 @@ function buildAgenda(){
   var dayNames = t('dayNames');
   var dayColors = ['day-color-0','day-color-1','day-color-2','day-color-3','day-color-4'];
 
-  var html = '<table class="agenda-table">';
-  // Header row
-  html += '<thead><tr><th class="col-period">'+t('period')+'</th>';
-  for(var d=0; d<nDays; d++){
-    html += '<th class="col-day '+dayColors[d%5]+'">'+dayNames[d%5]+' <span style="font-family:Schoolbell;font-size:0.75em;opacity:0.8;">('+t('day')+' '+(d+1)+')</span></th>';
-  }
-  html += '</tr></thead><tbody>';
+  var html = '<div class="agenda-days-wrap">';
 
-  // Period rows
-  for(var p=1; p<=nPeriods; p++){
-    html += '<tr>';
-    html += '<td class="period-label">P'+p+'</td>';
-    for(var d=0; d<nDays; d++){
+  for(var d=0; d<nDays; d++){
+    html += '<div class="agenda-day-col">';
+
+    // Day header
+    html += '<div class="agenda-day-header '+dayColors[d%5]+'">';
+    html += '<h3>'+dayNames[d%5]+'</h3>';
+    html += '<span>'+t('day')+' '+(d+1)+'</span>';
+    html += '</div>';
+
+    // Day body
+    html += '<div class="agenda-day-body">';
+
+    for(var p=1; p<=nPeriods; p++){
       var key = getKey(d,p);
+      var timeKey = getTimeKey(d,p);
       var data = agendaData[key] || {};
+      var timeVal = agendaData[timeKey] || '';
       var isSelected = selectedCell && selectedCell.day===d && selectedCell.period===p;
 
-      html += '<td><div class="period-cell'+(isSelected?' selected':'')+'" data-day="'+d+'" data-period="'+p+'" onclick="selectCell('+d+','+p+')">';
+      html += '<div class="period-card'+(isSelected?' selected':'')+'" id="pc-'+d+'-'+p+'">';
+
+      // Header with period badge + time input
+      html += '<div class="period-card-header">';
+      html += '<span class="period-badge">P'+p+'</span>';
+      html += '<input type="text" class="period-time-input" placeholder="'+t('timePlaceholder')+'" value="'+escAttr(timeVal)+'" onchange="saveTime('+d+','+p+',this.value)" />';
+      html += '</div>';
+
+      // Body (clickable for selection + game display)
+      html += '<div class="period-card-body" onclick="selectCell('+d+','+p+')" style="position:relative">';
 
       if(data.game){
         html += '<div class="cell-cat">'+escHtml(data.cat||'')+'</div>';
@@ -136,30 +159,54 @@ function buildAgenda(){
         html += '<button class="cell-clear visible" onclick="event.stopPropagation();clearCell('+d+','+p+')">&times;</button>';
       }
 
-      html += '<textarea class="cell-notes" placeholder="'+t('notesPlaceholder')+'" oninput="saveNotes('+d+','+p+',this.value)">'+(data.notes||'')+'</textarea>';
-      html += '</div></td>';
+      html += '<textarea class="cell-notes" placeholder="'+t('notesPlaceholder')+'" oninput="saveNotes('+d+','+p+',this.value)" onclick="event.stopPropagation()">'+(data.notes||'')+'</textarea>';
+      html += '</div>'; // period-card-body
+
+      html += '</div>'; // period-card
+
+      // Surveillance between periods (except after last)
+      if(p < nPeriods){
+        var survKey = getSurvKey(d,p);
+        var survData = agendaData[survKey] || {};
+        html += '<div class="surv-card">';
+        html += '<span class="surv-badge">👁 '+t('survLabel')+'</span>';
+        html += '<input type="text" class="surv-time" placeholder="'+t('survTimePh')+'" value="'+escAttr(survData.time||'')+'" onchange="saveSurv('+d+','+p+',\'time\',this.value)" />';
+        html += '<input type="text" class="surv-input" placeholder="'+t('survPlaceholder')+'" value="'+escAttr(survData.text||'')+'" onchange="saveSurv('+d+','+p+',\'text\',this.value)" />';
+        html += '</div>';
+      }
     }
-    html += '</tr>';
+
+    // Final surveillance (after last period — e.g. end of day)
+    var survKeyEnd = getSurvKey(d,nPeriods);
+    var survDataEnd = agendaData[survKeyEnd] || {};
+    html += '<div class="surv-card">';
+    html += '<span class="surv-badge">👁 '+t('survLabel')+'</span>';
+    html += '<input type="text" class="surv-time" placeholder="'+t('survTimePh')+'" value="'+escAttr(survDataEnd.time||'')+'" onchange="saveSurv('+d+','+nPeriods+',\'time\',this.value)" />';
+    html += '<input type="text" class="surv-input" placeholder="'+t('survPlaceholder')+'" value="'+escAttr(survDataEnd.text||'')+'" onchange="saveSurv('+d+','+nPeriods+',\'text\',this.value)" />';
+    html += '</div>';
+
+    html += '</div>'; // agenda-day-body
+    html += '</div>'; // agenda-day-col
   }
 
-  html += '</tbody></table>';
+  html += '</div>'; // agenda-days-wrap
   container.innerHTML = html;
 }
 
 function selectCell(d,p){
   selectedCell = {day:d, period:p};
-  // Update visual
-  document.querySelectorAll('.period-cell').forEach(function(el){ el.classList.remove('selected'); });
-  var cell = document.querySelector('.period-cell[data-day="'+d+'"][data-period="'+p+'"]');
-  if(cell) cell.classList.add('selected');
+  document.querySelectorAll('.period-card').forEach(function(el){ el.classList.remove('selected'); });
+  var card = document.getElementById('pc-'+d+'-'+p);
+  if(card) card.classList.add('selected');
 }
 
 function clearCell(d,p){
   var key = getKey(d,p);
   if(agendaData[key]){
     var notes = agendaData[key].notes || '';
-    agendaData[key] = {notes:notes};
+    agendaData[key] = notes ? {notes:notes} : undefined;
     if(!notes) delete agendaData[key];
+    else agendaData[key] = {notes:notes};
     saveAgenda();
     buildAgenda();
   }
@@ -169,6 +216,19 @@ function saveNotes(d,p,val){
   var key = getKey(d,p);
   if(!agendaData[key]) agendaData[key] = {};
   agendaData[key].notes = val;
+  saveAgenda();
+}
+
+function saveTime(d,p,val){
+  var key = getTimeKey(d,p);
+  agendaData[key] = val;
+  saveAgenda();
+}
+
+function saveSurv(d,p,field,val){
+  var key = getSurvKey(d,p);
+  if(!agendaData[key]) agendaData[key] = {};
+  agendaData[key][field] = val;
   saveAgenda();
 }
 
@@ -190,14 +250,12 @@ function buildBank(){
   var games = getGamesForLevel();
   var cats = getCategories(games);
 
-  // Build filter buttons
   var filterHTML = '<button class="bank-filter-btn'+(currentFilter==='all'?' active':'')+'" onclick="filterBank(\'all\')">'+t('allCat')+'</button>';
   cats.forEach(function(c){
     filterHTML += '<button class="bank-filter-btn'+(currentFilter===c?' active':'')+'" onclick="filterBank(\''+escAttr(c)+'\')">'+escHtml(c)+'</button>';
   });
   document.querySelector('.bank-filters').innerHTML = filterHTML;
 
-  // Build cards
   var filtered = currentFilter==='all' ? games : games.filter(function(g){ return g.cat === currentFilter; });
   var html = '';
   filtered.forEach(function(g, i){
