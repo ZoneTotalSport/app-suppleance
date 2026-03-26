@@ -37,7 +37,14 @@ var T = {
     promoF5d:"Imprime ton plan en un clic. Arrive à l'école avec ta feuille prête — confiance garantie!",
     promoF6t:"4 LANGUES",
     promoF6d:"Français, English, 中文 et Español. Utilise l'outil dans la langue de ton choix!",
-    promoBottom:"Créé par des enseignants d'ÉPS, pour des enseignants d'ÉPS."
+    promoBottom:"Créé par des enseignants d'ÉPS, pour des enseignants d'ÉPS.",
+    guideTitle:"COMMENT UTILISER CETTE APP?",
+    guideS1t:"CHOISIS TON NIVEAU", guideS1d:"Sélectionne le niveau scolaire du groupe que tu remplaces (préscolaire, 1er, 2e ou 3e cycle). La banque de jeux s'adapte automatiquement!",
+    guideS2t:"CONFIGURE TON HORAIRE", guideS2d:"Indique le nombre de jours et de périodes par jour. Clique sur « Ajouter » pour placer les récréations AM/PM et le dîner entre les périodes.",
+    guideS3t:"INSCRIS TES HEURES", guideS3d:"Dans la colonne de gauche, entre l'heure de début de chaque période et de chaque pause (ex: 9h00, 10h15, 11h30).",
+    guideS4t:"CLIQUE SUR UNE PÉRIODE", guideS4d:"Sélectionne la case de la période où tu veux ajouter un jeu. Elle devient surlignée en bleu pour confirmer ta sélection.",
+    guideS5t:"EXPLORE LA BANQUE DE JEUX", guideS5d:"Descends jusqu'à la banque de 800+ jeux. Filtre par catégorie, clique sur un jeu pour voir les détails, puis clique « Insérer » pour l'ajouter à ta période.",
+    guideS6t:"IMPRIME ET C'EST PARTI!", guideS6d:"Ajoute tes notes personnelles, puis clique l'icône imprimante 🖨️ pour imprimer ton plan. Arrive à l'école confiant et organisé!"
   },
   en: {
     appTitle:"MY SUBSTITUTE PLAN", lblLevel:"School level", lblDays:"Number of days",
@@ -72,7 +79,14 @@ var T = {
     promoF5d:"Print your plan in one click. Arrive at school with your sheet ready — confidence guaranteed!",
     promoF6t:"4 LANGUAGES",
     promoF6d:"Français, English, 中文 and Español. Use the tool in your preferred language!",
-    promoBottom:"Created by PE teachers, for PE teachers."
+    promoBottom:"Created by PE teachers, for PE teachers.",
+    guideTitle:"HOW TO USE THIS APP?",
+    guideS1t:"CHOOSE YOUR LEVEL", guideS1d:"Select the school level of the group you're replacing (preschool, cycle 1, 2 or 3). The game bank adapts automatically!",
+    guideS2t:"SET UP YOUR SCHEDULE", guideS2d:"Enter the number of days and periods per day. Click 'Add' to place AM/PM recesses and lunch between periods.",
+    guideS3t:"ENTER YOUR TIMES", guideS3d:"In the left column, enter the start time for each period and break (e.g. 9:00, 10:15, 11:30).",
+    guideS4t:"CLICK A PERIOD", guideS4d:"Select the period cell where you want to add a game. It highlights in blue to confirm your selection.",
+    guideS5t:"EXPLORE THE GAME BANK", guideS5d:"Scroll down to the 800+ game bank. Filter by category, click a game to see details, then click 'Insert' to add it to your period.",
+    guideS6t:"PRINT AND GO!", guideS6d:"Add your personal notes, then click the print icon 🖨️ to print your plan. Arrive at school confident and organized!"
   },
   zh: {
     appTitle:"我的代课计划", lblLevel:"学段", lblDays:"天数",
@@ -107,7 +121,14 @@ var T = {
     promoF5d:"一键打印你的计划。带着准备好的课表到校——信心满满！",
     promoF6t:"4种语言",
     promoF6d:"Français、English、中文和Español。用你喜欢的语言使用工具！",
-    promoBottom:"由体育教师为体育教师创建。"
+    promoBottom:"由体育教师为体育教师创建。",
+    guideTitle:"如何使用这个应用？",
+    guideS1t:"选择学段", guideS1d:"选择你代课班级的学段（学前班、第一、第二或第三学段）。游戏库会自动调整！",
+    guideS2t:"设置课表", guideS2d:"输入天数和每天课时数。点击「添加」在课时之间放置上午/下午课间和午餐。",
+    guideS3t:"填写时间", guideS3d:"在左侧栏中，输入每节课和每次休息的开始时间（如：9:00、10:15、11:30）。",
+    guideS4t:"点击课时", guideS4d:"选择你想添加游戏的课时格子。它会以蓝色高亮确认你的选择。",
+    guideS5t:"浏览游戏库", guideS5d:"向下滚动到800+游戏库。按类别筛选，点击游戏查看详情，然后点击「插入」将其添加到你的课时。",
+    guideS6t:"打印出发！", guideS6d:"添加你的个人备注，然后点击打印图标🖨️打印你的计划。满怀信心、井然有序地到达学校！"
   },
   es: {
     appTitle:"MI SUPLENCIA", lblLevel:"Nivel escolar", lblDays:"Número de días",
@@ -142,7 +163,14 @@ var T = {
     promoF5d:"Imprime tu plan en un clic. ¡Llega a la escuela con tu hoja lista — confianza garantizada!",
     promoF6t:"4 IDIOMAS",
     promoF6d:"Français, English, 中文 y Español. ¡Usa la herramienta en el idioma que prefieras!",
-    promoBottom:"Creado por profesores de EF, para profesores de EF."
+    promoBottom:"Creado por profesores de EF, para profesores de EF.",
+    guideTitle:"¿CÓMO USAR ESTA APP?",
+    guideS1t:"ELIGE TU NIVEL", guideS1d:"Selecciona el nivel escolar del grupo que reemplazas (preescolar, 1er, 2° o 3er ciclo). ¡El banco de juegos se adapta automáticamente!",
+    guideS2t:"CONFIGURA TU HORARIO", guideS2d:"Indica el número de días y períodos por día. Haz clic en 'Agregar' para colocar los recreos AM/PM y el almuerzo entre los períodos.",
+    guideS3t:"ESCRIBE TUS HORAS", guideS3d:"En la columna izquierda, ingresa la hora de inicio de cada período y pausa (ej: 9:00, 10:15, 11:30).",
+    guideS4t:"HAZ CLIC EN UN PERÍODO", guideS4d:"Selecciona la celda del período donde quieres agregar un juego. Se resalta en azul para confirmar tu selección.",
+    guideS5t:"EXPLORA EL BANCO DE JUEGOS", guideS5d:"Desplázate hasta el banco de 800+ juegos. Filtra por categoría, haz clic en un juego para ver detalles, luego haz clic en 'Insertar' para agregarlo a tu período.",
+    guideS6t:"¡IMPRIME Y LISTO!", guideS6d:"Agrega tus notas personales, luego haz clic en el icono de impresora 🖨️ para imprimir tu plan. ¡Llega a la escuela con confianza y organizado!"
   }
 };
 
