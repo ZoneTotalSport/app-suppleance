@@ -141,23 +141,21 @@ h1,h2,h3 { font-family:'Bangers',cursive; letter-spacing:2px; text-transform:upp
   max-width:1500px; margin:0 auto 30px; padding:0 16px;
 }
 
-.agenda-wrap {
-  display:flex; gap:12px; overflow-x:auto; padding-bottom:10px;
+/* Agenda CSS Grid */
+.agenda-grid {
+  display:grid;
+  gap:10px;
+  overflow-x:auto;
+  padding-bottom:10px;
+  align-items:stretch;
 }
 
-/* Time column (left) */
-.time-column {
-  min-width:90px; max-width:90px;
-  display:flex; flex-direction:column;
-  gap:10px;
-  padding-top:10px;
-}
+/* Time column cells (left) */
 .time-col-header {
   padding:14px 8px; text-align:center;
   font-size:1.4rem;
   background:var(--navy); color:var(--white);
   border-radius:var(--r-lg);
-  margin-top:-10px;
 }
 .time-slot {
   display:flex; align-items:center; justify-content:center;
@@ -165,8 +163,7 @@ h1,h2,h3 { font-family:'Bangers',cursive; letter-spacing:2px; text-transform:upp
   border-radius:var(--r-md);
   box-shadow:0 2px 6px rgba(0,0,0,0.08);
 }
-.time-slot-period { min-height:140px; }
-.time-slot-break { min-height:50px; background:rgba(255,255,255,0.6); }
+.time-slot-break { background:rgba(255,255,255,0.6); }
 .time-input {
   font-family:'Schoolbell',cursive; font-size:1.1rem;
   background:transparent; border:none;
@@ -176,14 +173,10 @@ h1,h2,h3 { font-family:'Bangers',cursive; letter-spacing:2px; text-transform:upp
 .time-input::placeholder { color:rgba(0,0,0,0.3); font-weight:normal; }
 .time-input-break { color:var(--orange); font-size:1rem; }
 
-/* Day columns */
-.agenda-day-col {
-  flex:1; min-width:240px;
-}
-
+/* Day column headers */
 .agenda-day-header {
   padding:14px 16px;
-  border-radius:var(--r-lg) var(--r-lg) 0 0;
+  border-radius:var(--r-lg);
   text-align:center;
   color:var(--white);
 }
@@ -194,14 +187,6 @@ h1,h2,h3 { font-family:'Bangers',cursive; letter-spacing:2px; text-transform:upp
   font-family:'Schoolbell',cursive; font-size:1.1rem; opacity:0.85;
 }
 
-.agenda-day-body {
-  background:transparent;
-  border-radius:0 0 var(--r-lg) var(--r-lg);
-  display:flex; flex-direction:column;
-  gap:10px;
-  padding:10px 0;
-}
-
 /* Period card inside a day */
 .period-card {
   background:rgba(255,255,255,1);
@@ -209,7 +194,6 @@ h1,h2,h3 { font-family:'Bangers',cursive; letter-spacing:2px; text-transform:upp
   transition:all 0.2s;
   border-radius:var(--r-md);
   box-shadow:0 2px 8px rgba(0,0,0,0.1);
-  min-height:140px;
 }
 .period-card.selected {
   background:rgba(0,229,255,0.08);
@@ -278,7 +262,6 @@ h1,h2,h3 { font-family:'Bangers',cursive; letter-spacing:2px; text-transform:upp
 /* Break cards (recess / lunch / surv) */
 .break-card {
   padding:10px 14px;
-  min-height:50px;
   display:flex; flex-direction:column; gap:4px;
   justify-content:center;
   border-radius:var(--r-md);
@@ -549,8 +532,7 @@ h1,h2,h3 { font-family:'Bangers',cursive; letter-spacing:2px; text-transform:upp
   .header-title { font-size:2rem; }
   .header-mascot { height:70px; }
   .config-bar { flex-direction:column; align-items:center; }
-  .agenda-days-wrap { flex-direction:column; }
-  .agenda-day-col { min-width:100%; }
+  .agenda-grid { overflow-x:auto; }
   .bank-grid { grid-template-columns:1fr; }
   .bank-header { flex-direction:column; text-align:center; }
 }

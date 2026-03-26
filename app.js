@@ -147,39 +147,31 @@ function buildAgenda(){
   // Build break tags for config bar
   buildBreakTags();
 
-  var html = '<div class="agenda-wrap">';
+  // CSS Grid: 1 time col + nDays day cols
+  var colTemplate = '90px ' + Array(nDays).fill('1fr').join(' ');
+  var html = '<div class="agenda-grid" style="grid-template-columns:'+colTemplate+'">';
 
-  // === TIME COLUMN (left) ===
-  html += '<div class="time-column">';
+  // === HEADER ROW ===
   html += '<div class="time-col-header">⏰</div>';
+  for(var d=0; d<nDays; d++){
+    html += '<div class="agenda-day-header '+dayColors[d%5]+'">';
+    html += '<h3>'+dayNames[d%5]+'</h3>';
+    html += '<span>'+t('day')+' '+(d+1)+'</span>';
+    html += '</div>';
+  }
+
+  // === SLOT ROWS ===
   slots.forEach(function(slot){
     if(slot.type === 'period'){
+      // Time cell
       var timeKey = 'time-'+slot.period;
       var timeVal = agendaData[timeKey] || '';
       html += '<div class="time-slot time-slot-period">';
       html += '<input type="text" class="time-input" placeholder="'+t('timePlaceholder')+'" value="'+escAttr(timeVal)+'" onchange="saveTimeSlot('+slot.period+',this.value)" />';
       html += '</div>';
-    } else {
-      var bTimeKey = 'btime-'+slot.id;
-      var bTimeVal = agendaData[bTimeKey] || '';
-      html += '<div class="time-slot time-slot-break">';
-      html += '<input type="text" class="time-input time-input-break" placeholder="'+t('survTimePh')+'" value="'+escAttr(bTimeVal)+'" onchange="saveBreakTime(\''+slot.id+'\',this.value)" />';
-      html += '</div>';
-    }
-  });
-  html += '</div>';
 
-  // === DAY COLUMNS ===
-  for(var d=0; d<nDays; d++){
-    html += '<div class="agenda-day-col">';
-    html += '<div class="agenda-day-header '+dayColors[d%5]+'">';
-    html += '<h3>'+dayNames[d%5]+'</h3>';
-    html += '<span>'+t('day')+' '+(d+1)+'</span>';
-    html += '</div>';
-    html += '<div class="agenda-day-body">';
-
-    slots.forEach(function(slot){
-      if(slot.type === 'period'){
+      // Day cells
+      for(var d=0; d<nDays; d++){
         var p = slot.period;
         var key = getKey(d,p);
         var data = agendaData[key] || {};
@@ -198,9 +190,18 @@ function buildAgenda(){
         }
         html += '<textarea class="cell-notes" placeholder="'+t('notesPlaceholder')+'" oninput="saveNotes('+d+','+p+',this.value)" onclick="event.stopPropagation()">'+(data.notes||'')+'</textarea>';
         html += '</div></div>';
+      }
 
-      } else {
-        // Break card (recess / lunch)
+    } else {
+      // Break time cell
+      var bTimeKey = 'btime-'+slot.id;
+      var bTimeVal = agendaData[bTimeKey] || '';
+      html += '<div class="time-slot time-slot-break">';
+      html += '<input type="text" class="time-input time-input-break" placeholder="'+t('survTimePh')+'" value="'+escAttr(bTimeVal)+'" onchange="saveBreakTime(\''+slot.id+'\',this.value)" />';
+      html += '</div>';
+
+      // Break day cells
+      for(var d=0; d<nDays; d++){
         var bKey = 'brk-'+d+'-'+slot.id;
         var bData = agendaData[bKey] || {};
         var icon = slot.type==='lunch'?'🍎':'⚽';
@@ -216,10 +217,8 @@ function buildAgenda(){
         html += '<input type="text" class="break-notes" placeholder="'+ph+'" value="'+escAttr(bData.text||'')+'" onchange="saveBreakData(\''+bKey+'\',this.value)" />';
         html += '</div>';
       }
-    });
-
-    html += '</div></div>';
-  }
+    }
+  });
 
   html += '</div>';
   container.innerHTML = html;
