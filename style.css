@@ -165,8 +165,8 @@ h1,h2,h3 { font-family:'Bangers',cursive; letter-spacing:2px; text-transform:upp
 .agenda-day-body {
   background:rgba(255,255,255,1);
   border-radius:0 0 var(--r-lg) var(--r-lg);
-  padding:10px;
-  display:flex; flex-direction:column; gap:10px;
+  padding:14px;
+  display:flex; flex-direction:column; gap:18px;
   box-shadow:0 8px 30px rgba(0,0,0,0.1);
 }
 
@@ -240,6 +240,43 @@ h1,h2,h3 { font-family:'Bangers',cursive; letter-spacing:2px; text-transform:upp
 }
 .period-card:hover .cell-clear.visible { display:block; }
 .period-card .cell-clear:hover { background:rgba(255,0,0,0.25); }
+
+/* Break cards (recess / lunch) */
+.break-card {
+  display:flex; align-items:center; gap:10px;
+  padding:12px 14px;
+  border-radius:var(--r-md);
+  flex-wrap:wrap;
+}
+.break-recess {
+  background:rgba(76,175,80,0.12);
+  border:2px solid rgba(76,175,80,0.3);
+}
+.break-lunch {
+  background:rgba(255,152,0,0.12);
+  border:2px solid rgba(255,152,0,0.3);
+}
+.break-icon { font-size:1.6rem; }
+.break-content { display:flex; align-items:center; gap:8px; }
+.break-label {
+  font-family:'Bangers',cursive; font-size:1.2rem;
+  letter-spacing:2px; white-space:nowrap;
+}
+.break-recess .break-label { color:var(--green); }
+.break-lunch .break-label { color:var(--orange); }
+.break-time {
+  font-family:'Schoolbell',cursive; font-size:1.1rem;
+  background:transparent; border:none; border-bottom:1px dashed rgba(0,0,0,0.2);
+  color:var(--text); width:100px; padding:4px; outline:none; text-align:center;
+}
+.break-time::placeholder { color:rgba(0,0,0,0.3); }
+.break-notes {
+  flex:1; min-width:120px;
+  font-family:'Schoolbell',cursive; font-size:1.1rem;
+  background:transparent; border:none; border-bottom:1px dashed rgba(0,0,0,0.15);
+  color:var(--text); padding:4px; outline:none;
+}
+.break-notes::placeholder { color:rgba(0,0,0,0.3); }
 
 /* Surveillance row */
 .surv-card {

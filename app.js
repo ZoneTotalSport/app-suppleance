@@ -17,6 +17,8 @@ var T = {
     survLabel:"SURVEILLANCE",
     survPlaceholder:"Lieu / détails...",
     survTimePh:"ex: 10h15",
+    recess:"RÉCRÉATION", lunch:"DÎNER",
+    recessPh:"Notes récré...", lunchPh:"Notes dîner...",
     duration:"Durée", material:"Matériel", intensity:"Intensité",
     confirmReset:"Effacer toute la planification?",
     selectPeriod:"Sélectionne d'abord une période dans l'agenda (clique sur la case)!",
@@ -35,6 +37,8 @@ var T = {
     survLabel:"SUPERVISION",
     survPlaceholder:"Location / details...",
     survTimePh:"e.g. 10:15",
+    recess:"RECESS", lunch:"LUNCH",
+    recessPh:"Recess notes...", lunchPh:"Lunch notes...",
     duration:"Duration", material:"Material", intensity:"Intensity",
     confirmReset:"Clear all planning?",
     selectPeriod:"Select a period in the agenda first (click a cell)!",
@@ -53,6 +57,8 @@ var T = {
     survLabel:"监督",
     survPlaceholder:"地点/详情...",
     survTimePh:"如：10:15",
+    recess:"课间休息", lunch:"午餐",
+    recessPh:"课间备注...", lunchPh:"午餐备注...",
     duration:"时长", material:"器材", intensity:"强度",
     confirmReset:"清除所有计划？",
     selectPeriod:"请先点击一个课时格子！",
@@ -71,6 +77,8 @@ var T = {
     survLabel:"VIGILANCIA",
     survPlaceholder:"Lugar / detalles...",
     survTimePh:"ej: 10:15",
+    recess:"RECREO", lunch:"ALMUERZO",
+    recessPh:"Notas recreo...", lunchPh:"Notas almuerzo...",
     duration:"Duración", material:"Material", intensity:"Intensidad",
     confirmReset:"¿Borrar toda la planificación?",
     selectPeriod:"¡Selecciona primero un período (clic en la celda)!",
@@ -134,6 +142,9 @@ function buildAgenda(){
     // Day body
     html += '<div class="agenda-day-body">';
 
+    // Determine break positions: recess after P2, lunch halfway, recess after P(mid+1)
+    var midPoint = Math.ceil(nPeriods / 2);
+
     for(var p=1; p<=nPeriods; p++){
       var key = getKey(d,p);
       var timeKey = getTimeKey(d,p);
@@ -161,22 +172,57 @@ function buildAgenda(){
 
       html += '<textarea class="cell-notes" placeholder="'+t('notesPlaceholder')+'" oninput="saveNotes('+d+','+p+',this.value)" onclick="event.stopPropagation()">'+(data.notes||'')+'</textarea>';
       html += '</div>'; // period-card-body
-
       html += '</div>'; // period-card
 
-      // Surveillance between periods (except after last)
+      // Insert breaks between periods
       if(p < nPeriods){
-        var survKey = getSurvKey(d,p);
-        var survData = agendaData[survKey] || {};
-        html += '<div class="surv-card">';
-        html += '<span class="surv-badge">👁 '+t('survLabel')+'</span>';
-        html += '<input type="text" class="surv-time" placeholder="'+t('survTimePh')+'" value="'+escAttr(survData.time||'')+'" onchange="saveSurv('+d+','+p+',\'time\',this.value)" />';
-        html += '<input type="text" class="surv-input" placeholder="'+t('survPlaceholder')+'" value="'+escAttr(survData.text||'')+'" onchange="saveSurv('+d+','+p+',\'text\',this.value)" />';
-        html += '</div>';
+        if(p === midPoint){
+          // LUNCH break
+          var lunchKey = 'lunch-'+d;
+          var lunchData = agendaData[lunchKey] || {};
+          html += '<div class="break-card break-lunch">';
+          html += '<div class="break-icon">🍎</div>';
+          html += '<div class="break-content">';
+          html += '<span class="break-label">'+t('lunch')+'</span>';
+          html += '<input type="text" class="break-time" placeholder="'+t('survTimePh')+'" value="'+escAttr(lunchData.time||'')+'" onchange="saveBreak(\'lunch-'+d+'\',\'time\',this.value)" />';
+          html += '</div>';
+          html += '<input type="text" class="break-notes" placeholder="'+t('lunchPh')+'" value="'+escAttr(lunchData.text||'')+'" onchange="saveBreak(\'lunch-'+d+'\',\'text\',this.value)" />';
+          html += '</div>';
+
+          // Surveillance at lunch
+          var survKey = getSurvKey(d,p);
+          var survData = agendaData[survKey] || {};
+          html += '<div class="surv-card">';
+          html += '<span class="surv-badge">👁 '+t('survLabel')+'</span>';
+          html += '<input type="text" class="surv-time" placeholder="'+t('survTimePh')+'" value="'+escAttr(survData.time||'')+'" onchange="saveSurv('+d+','+p+',\'time\',this.value)" />';
+          html += '<input type="text" class="surv-input" placeholder="'+t('survPlaceholder')+'" value="'+escAttr(survData.text||'')+'" onchange="saveSurv('+d+','+p+',\'text\',this.value)" />';
+          html += '</div>';
+        } else {
+          // RECESS break
+          var recKey = 'rec-'+d+'-'+p;
+          var recData = agendaData[recKey] || {};
+          html += '<div class="break-card break-recess">';
+          html += '<div class="break-icon">⚽</div>';
+          html += '<div class="break-content">';
+          html += '<span class="break-label">'+t('recess')+'</span>';
+          html += '<input type="text" class="break-time" placeholder="'+t('survTimePh')+'" value="'+escAttr(recData.time||'')+'" onchange="saveBreak(\'rec-'+d+'-'+p+'\',\'time\',this.value)" />';
+          html += '</div>';
+          html += '<input type="text" class="break-notes" placeholder="'+t('recessPh')+'" value="'+escAttr(recData.text||'')+'" onchange="saveBreak(\'rec-'+d+'-'+p+'\',\'text\',this.value)" />';
+          html += '</div>';
+
+          // Surveillance at recess
+          var survKey = getSurvKey(d,p);
+          var survData = agendaData[survKey] || {};
+          html += '<div class="surv-card">';
+          html += '<span class="surv-badge">👁 '+t('survLabel')+'</span>';
+          html += '<input type="text" class="surv-time" placeholder="'+t('survTimePh')+'" value="'+escAttr(survData.time||'')+'" onchange="saveSurv('+d+','+p+',\'time\',this.value)" />';
+          html += '<input type="text" class="surv-input" placeholder="'+t('survPlaceholder')+'" value="'+escAttr(survData.text||'')+'" onchange="saveSurv('+d+','+p+',\'text\',this.value)" />';
+          html += '</div>';
+        }
       }
     }
 
-    // Final surveillance (after last period — e.g. end of day)
+    // End of day surveillance
     var survKeyEnd = getSurvKey(d,nPeriods);
     var survDataEnd = agendaData[survKeyEnd] || {};
     html += '<div class="surv-card">';
@@ -227,6 +273,12 @@ function saveTime(d,p,val){
 
 function saveSurv(d,p,field,val){
   var key = getSurvKey(d,p);
+  if(!agendaData[key]) agendaData[key] = {};
+  agendaData[key][field] = val;
+  saveAgenda();
+}
+
+function saveBreak(key,field,val){
   if(!agendaData[key]) agendaData[key] = {};
   agendaData[key][field] = val;
   saveAgenda();
