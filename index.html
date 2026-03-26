@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Ma Suppléance EPS — Planificateur pour suppléants en éducation physique. zonetotalsport.ca" />
+  <meta name="theme-color" content="#00E5FF" />
+  <title>Ma Suppléance — Zone Total Sport</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Schoolbell&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css?v=1" />
+</head>
+<body>
+
+  <!-- LOADING SCREEN -->
+  <div id="loading-screen">
+    <img src="img/bucheron-salut.png" alt="Bûcheron" class="loading-mascot" />
+    <h1 class="loading-title">MA SUPPLÉANCE</h1>
+    <p class="loading-sub">Zone Total Sport</p>
+    <div class="loading-bar"><div class="loading-fill"></div></div>
+  </div>
+
+  <!-- GYM BACKGROUND -->
+  <div id="gymBg"></div>
+
+  <!-- MAIN APP -->
+  <div id="app" class="app-hidden">
+
+    <!-- HEADER -->
+    <header class="app-header">
+      <div class="header-center">
+        <img src="img/bucheron-pointer.png" alt="" class="header-mascot" />
+        <div class="header-text">
+          <h1 class="header-title">MA SUPPLÉANCE</h1>
+          <a href="https://www.zonetotalsport.ca/boite-a-outils-eps" class="header-sub" target="_blank">Zone Total Sport</a>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="lang-switcher">
+          <button class="lang-btn lang-active" onclick="setLang('fr')">FR</button>
+          <button class="lang-btn" onclick="setLang('en')">EN</button>
+          <button class="lang-btn" onclick="setLang('zh')">中文</button>
+          <button class="lang-btn" onclick="setLang('es')">ES</button>
+        </div>
+        <button onclick="window.print()" class="hdr-btn" title="Imprimer">🖨️</button>
+        <button onclick="resetAll()" class="hdr-btn hdr-btn-danger" title="Réinitialiser">🗑️</button>
+      </div>
+    </header>
+
+    <!-- CONFIG BAR -->
+    <div class="config-bar no-print">
+      <div class="config-item">
+        <label data-i18n="lblLevel">Niveau scolaire</label>
+        <select id="sel-level" onchange="refreshAll()">
+          <option value="prescolaire" data-i18n="lvlPresc">Préscolaire / Maternelle</option>
+          <option value="cycle1" data-i18n="lvlC1">1er Cycle (1re-2e)</option>
+          <option value="cycle2" selected data-i18n="lvlC2">2e Cycle (3e-4e)</option>
+          <option value="cycle3" data-i18n="lvlC3">3e Cycle (5e-6e)</option>
+        </select>
+      </div>
+      <div class="config-item">
+        <label data-i18n="lblDays">Nombre de jours</label>
+        <select id="sel-days" onchange="refreshAll()">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3" selected>3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+      </div>
+      <div class="config-item">
+        <label data-i18n="lblPeriods">Périodes / jour</label>
+        <select id="sel-periods" onchange="refreshAll()">
+          <option value="3">3</option>
+          <option value="4" selected>4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- AGENDA GRID -->
+    <div id="agenda-container" class="agenda-container"></div>
+
+    <!-- GAME BANK -->
+    <div class="bank-section no-print">
+      <div class="bank-header">
+        <img src="img/bucheron-createur.png" alt="" class="bank-mascot" />
+        <div>
+          <h2 data-i18n="bankTitle">BANQUE DE JEUX</h2>
+          <p data-i18n="bankSub">Clique sur un jeu pour le copier dans une période!</p>
+        </div>
+      </div>
+      <div class="bank-filters">
+        <button class="bank-filter-btn active" data-cat="all" onclick="filterBank('all')" data-i18n="allCat">Tous</button>
+      </div>
+      <div id="bank-grid" class="bank-grid"></div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="app-footer no-print">
+      <div class="app-footer-inner">
+        <img src="img/bucheron-defi.png" alt="" class="footer-mascot" />
+        <p>Ma Suppléance EPS &mdash; <a href="https://www.zonetotalsport.ca/boite-a-outils-eps" target="_blank"><strong>zonetotalsport.ca</strong></a></p>
+        <p class="footer-copy">&copy; 2025-2026 Zone Total Sport. Tous droits réservés.</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- MODAL GAME DETAIL -->
+  <div id="gameModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 id="modal-game-title">Jeu</h2>
+        <button onclick="closeModal()" class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-game-meta" id="modal-game-meta"></div>
+        <div class="modal-game-desc" id="modal-game-desc"></div>
+        <button onclick="insertGameToPeriod()" class="btn-save" id="btn-insert" style="display:none;" data-i18n="insertBtn">INSÉRER DANS LA PÉRIODE</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="jeux-suppleance.js?v=1"></script>
+  <script src="app.js?v=1"></script>
+</body>
+</html>
