@@ -255,6 +255,7 @@ h1,h2,h3 { font-family:'Bangers',cursive; letter-spacing:2px; text-transform:upp
 .time-slot {
   display:flex; align-items:center; justify-content:center;
   background:rgba(255,255,255,0.92);
+  position:relative;
   border-radius:var(--r-md);
   box-shadow:0 2px 6px rgba(0,0,0,0.08);
 }
@@ -291,8 +292,9 @@ h1,h2,h3 { font-family:'Bangers',cursive; letter-spacing:2px; text-transform:upp
   box-shadow:0 2px 8px rgba(0,0,0,0.1);
 }
 .period-card.selected {
-  background:rgba(0,229,255,0.08);
+  background:rgba(255,255,255,0.95);
   box-shadow:inset 4px 0 0 var(--cyan);
+  border:2px solid var(--cyan);
 }
 
 .period-card-header {
@@ -337,12 +339,19 @@ h1,h2,h3 { font-family:'Bangers',cursive; letter-spacing:2px; text-transform:upp
 }
 
 .period-card .cell-notes {
-  width:100%; border:none; background:transparent;
+  width:100%; border:none;
+  background:rgba(255,255,255,0.9);
   font-family:'Schoolbell',cursive; font-size:1.2rem;
-  color:var(--text); resize:none; outline:none;
-  min-height:50px; padding:6px 0;
+  color:#1a1a2e; resize:none; outline:none;
+  min-height:50px; padding:8px;
+  border-radius:8px;
+  border:1px dashed rgba(0,0,0,0.12);
 }
-.period-card .cell-notes::placeholder { color:#bbb; }
+.period-card .cell-notes:focus {
+  background:#fff;
+  border-color:var(--cyan);
+}
+.period-card .cell-notes::placeholder { color:#aaa; }
 
 .period-card .cell-clear {
   position:absolute; top:8px; right:10px;
@@ -365,7 +374,24 @@ h1,h2,h3 { font-family:'Bangers',cursive; letter-spacing:2px; text-transform:upp
 .break-recess { background:rgba(76,175,80,0.6); }
 .break-lunch { background:rgba(255,152,0,0.6); }
 .break-surv { background:rgba(0,229,255,0.6); }
-.break-top { display:flex; align-items:center; gap:6px; }
+.break-top { display:flex; align-items:center; gap:6px; position:relative; }
+.break-remove {
+  margin-left:auto;
+  background:rgba(255,0,0,0.15); border:none; color:#c00;
+  border-radius:50%; width:24px; height:24px;
+  font-size:1.1rem; cursor:pointer; line-height:24px; text-align:center;
+  transition:all 0.2s; opacity:0.5;
+}
+.break-remove:hover { background:rgba(255,0,0,0.4); color:#fff; opacity:1; }
+.break-remove-time {
+  position:absolute; top:2px; right:2px;
+  background:rgba(255,0,0,0.15); border:none; color:#c00;
+  border-radius:50%; width:18px; height:18px;
+  font-size:0.8rem; cursor:pointer; line-height:18px; text-align:center;
+  transition:all 0.2s; opacity:0;
+}
+.time-slot:hover .break-remove-time { opacity:0.7; }
+.break-remove-time:hover { background:rgba(255,0,0,0.4); color:#fff; opacity:1; }
 .break-icon { font-size:1.2rem; }
 .break-label {
   font-family:'Bangers',cursive; font-size:1.1rem;

@@ -286,6 +286,7 @@ function buildAgenda(){
       var bTimeVal = agendaData[bTimeKey] || '';
       html += '<div class="time-slot time-slot-break">';
       html += '<input type="text" class="time-input time-input-break" placeholder="'+t('survTimePh')+'" value="'+escAttr(bTimeVal)+'" onchange="saveBreakTime(\''+slot.id+'\',this.value)" />';
+      html += '<button class="break-remove-time" onclick="removeBreak(\''+slot.id+'\')" title="'+t('removeBreak')+'">&times;</button>';
       html += '</div>';
 
       // Break day cells
@@ -301,6 +302,7 @@ function buildAgenda(){
         html += '<div class="break-top">';
         html += '<span class="break-icon">'+icon+'</span>';
         html += '<span class="break-label">'+label+'</span>';
+        html += '<button class="break-remove" onclick="removeBreak(\''+slot.id+'\')" title="'+t('removeBreak')+'">&times;</button>';
         html += '</div>';
         html += '<input type="text" class="break-notes" placeholder="'+ph+'" value="'+escAttr(bData.text||'')+'" onchange="saveBreakData(\''+bKey+'\',this.value)" />';
         html += '</div>';
