@@ -58,7 +58,7 @@ h1,h2,h3 { font-family:'Bangers',cursive; letter-spacing:2px; text-transform:upp
   z-index:0;
 }
 #loading-screen > * { position:relative; z-index:1; }
-.loading-mascot { height:220px; animation:bounce 0.8s infinite; filter:drop-shadow(0 10px 30px rgba(0,0,0,0.3)); }
+.loading-mascot { height:360px; animation:bounce 0.8s infinite; filter:drop-shadow(0 10px 30px rgba(0,0,0,0.3)); }
 .loading-title {
   font-family:'Bangers',cursive; font-size:4rem; color:#fff;
   margin-top:20px; letter-spacing:4px;
